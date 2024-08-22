@@ -129,7 +129,8 @@ UPROGS=\
 	$U/_echo\
 	$U/_forktest\
 	$U/_grep\
-	$U/_Tarea0\
+	$U/_Tarea00\
+	$U/_Tarea01\
 	$U/_init\
 	$U/_kill\
 	$U/_ln\
