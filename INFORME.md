@@ -30,8 +30,8 @@ Pasos para instalar Xv6:
 Problemas encontrados y soluciones:
  1. El acceso a la VM de manera gratuita solo fue posible a traves de la descarga pirata.
 
- 2. Tenia que utilizar el comando sudo para hacer uso del admin master en la instalacion de las herramientas necesarias para Xv6, sin embargo desconocia el funcionamiento de este comando. Esto se soluciono investigando y aprendiendo de este comando para luego ejecutarlo.
- 
+ 2. Al hacer el paso a paso del blog https://bernardnongpoh.github.io/posts/riscv para la instalacion de riscv toolchain en la VM, tenia que utilizar el comando sudo para hacer uso del admin master, sin embargo, desconocia el funcionamiento de este comando. Esto se soluciono investigando y aprendiendo de este comando en el internet, para luego ejecutarlo.
+
  3. Al clonar el repositorio, la cantidad de archivos no permitia que se pudiera llegar a termino y tiraba error. Esto se soluciono haciendo en primera instancia una clonacion superficial, para luego hacer una clonacion mas profunda con los comandos mencionados en el paso 3.
 
  4. Al hacer el make qemu tiro un error debido a que el compilador RISC-V y sus herramientas no estaban instaladas correctamente, en especifico gcc. Esto se soluciono ejecutando los comandos sudo apt-get update y sudo apt-get install gcc-riscv64-unknown-elf, comandos para actualizar la lista de paquetes disponibles y sus versiones, y para instalar el compilador gcc, respectivamente.
@@ -45,6 +45,7 @@ Problemas encontrados y soluciones:
 Confirmacion del correcto funcionamiento de Xv6:
 
  1. Comando: ls
+
 	Resultado: 
 	.              1 1 1024
 	..             1 1 1024
@@ -70,9 +71,11 @@ Confirmacion del correcto funcionamiento de Xv6:
 	console        3 21 0
 
  2. Comando: echo "Hola xv6"
+
 	Resultado: "Hola xv6"
 
  3. Comando: cat README
+
 	Resultado:
 	xv6 is a re-implementation of Dennis Ritchie's and Ken Thompson's Unix
 	Version 6 (v6).  xv6 loosely follows the structure and style of v6,
