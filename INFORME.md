@@ -6,23 +6,23 @@ Pasos para instalar Xv6:
 	* sudo permite manejar la terminal como admin master, permitiendo tareas como agregar y eliminar usuarios, etc. PD: Pide la clave de usuario del sistema para ejecutarse.
 	- En la terminal de Linux se ejecutó el comando "sudo -i" y "apt-get install git" para instalar git en la VM.
 	- En la terminal de Linux se ejecutó el comando "apt-get install qemu-system" para instalar qemu en la VM.
-	- Se siguieron los pasos de este blog https://bernardnongpoh.github.io/posts/riscv para la instalacion de riscv toolchain en la VM.
+	- Se siguieron los pasos de este blog https://bernardnongpoh.github.io/posts/riscv para la instalación de riscv toolchain en la VM.
 
 2. Sign up y uso de  Github:
 	- Se creo una cuenta en github para el uso de los repositorios.
-	- Se usó el link de la primera presentacion para ir al github de Xv6 proporcionado por el profesor.
+	- Se usó el link de la primera presentación para ir al github de Xv6 proporcionado por el profesor.
 	- Se creo un Fork desde el link de Xv6 al github personal creado anteriormente.
 
-3. Clonacion de Fork:
+3. Clonación de Fork:
 	- Se inició VSCode en Ubuntu.
-	- En la terminal de VSCode se ejecutó "git clone --depth 1 https://github.com/Vale-Arce22/xv6-riscv" para hacer una clonacion superficial del Fork creado en el paso 2.
+	- En la terminal de VSCode se ejecutó "git clone --depth 1 https://github.com/Vale-Arce22/xv6-riscv" para hacer una clonación superficial del Fork creado en el paso 2.
 	- Se ejecutó "cd xv6-riscv" para ir a la carpeta "xv6-riscv" creada a partir de la clonación.
 	- Se ejecutó "git fetch --unshallow" para realizar el resto de la clonación de manera profunda y poder clonar todos los archivos del repositorio.
 	
 4. Compilación y Ejecución
 	- En la terminal se ejecutó "git checkout -b Tarea0" para crear un primer branch con el nombre Tarea0.
 	- En la terminal se ejecutó "make qemu" para compilar y ejecutar Xv6 dentro de la VM QEMU.
-	- Una vez Xv6 ejecutandose en QEMU se verificó que funcionara correctamente con los comandos: 
+	- Una vez Xv6 ejecutándose en QEMU se verificó que funcionara correctamente con los comandos: 
 		ls
 		echo "Hola xv6"
 		cat README
@@ -30,19 +30,19 @@ Pasos para instalar Xv6:
 Problemas encontrados y soluciones:
  1. El acceso a la VM de manera gratuita solo fue posible a través de la descarga pirata.
 
- 2. Al hacer el paso a paso del blog https://bernardnongpoh.github.io/posts/riscv para la instalación de riscv toolchain en la VM, se tenía que utilizar el comando sudo para hacer uso del admin master, sin embargo, se desconocia el funcionamiento de este comando. Esto se solucionó investigando y aprendiendo de este comando en internet, para luego ejecutarlo.
+ 2. Al hacer el paso a paso del blog https://bernardnongpoh.github.io/posts/riscv para la instalación de riscv toolchain en la VM, se tenía que utilizar el comando sudo para hacer uso del admin master, sin embargo, se desconocía el funcionamiento de este comando. Esto se solucionó investigando y aprendiendo de este comando en internet, para luego ejecutarlo.
 
- 3. Al clonar el repositorio, la cantidad de archivos no permitia que se pudiera llegar a termino y tiraba error. Esto se solucionó haciendo en primera instancia una clonación superficial, para luego hacer una clonación mas profunda con los comandos mencionados en el paso 3.
+ 3. Al clonar el repositorio, la cantidad de archivos no permitía que se pudiera llegar a término y tiraba error. Esto se solucionó haciendo en primera instancia una clonación superficial, para luego hacer una clonación más profunda con los comandos mencionados en el paso 3.
 
- 4. Al hacer el make qemu tiro un error debido a que el compilador RISC-V y sus herramientas no estaban instaladas correctamente, en especifico gcc. Esto se solucionó ejecutando los comandos "sudo apt-get update" y "sudo apt-get install gcc-riscv64-unknown-elf", comandos para actualizar la lista de paquetes disponibles y sus versiones, y para instalar el compilador gcc, respectivamente.
+ 4. Al hacer el make qemu tiró un error debido a que el compilador RISC-V y sus herramientas no estaban instaladas correctamente, en específico gcc. Esto se solucionó ejecutando los comandos "sudo apt-get update" y "sudo apt-get install gcc-riscv64-unknown-elf", comandos para actualizar la lista de paquetes disponibles y sus versiones, y para instalar el compilador gcc, respectivamente.
 
  5. No fue posible cerrar Xv6 con Ctrl + A, X; ni interrumpir el proceso con Ctrl + C. Esto se solucionó:
 	1) Cerrando la terminal.
 	2) Abriendo una nueva terminal.
 	3) Ejecutando el comando "pgrep qemu" para obtener el PID.
-	4) Ejecutando el comando "kill -9 <PID>" para forzar el termino del proceso.
+	4) Ejecutando el comando "kill -9 <PID>" para forzar el término del proceso.
 
-Confirmacion del correcto funcionamiento de Xv6:
+Confirmación del correcto funcionamiento de Xv6:
 
  1. Comando: ls
 
