@@ -40,7 +40,7 @@ Problemas encontrados y soluciones:
 	1) Cerrando la terminal.
 	2) Abriendo una nueva terminal.
 	3) Ejecutando el comando "pgrep qemu" para obtener el PID.
-	4) Ejecutando el comando "kill -9 <PID>" para forzar el término del proceso.
+	4) Ejecutando el comando "kill -9 PID" para forzar el término del proceso.
 
 Confirmación del correcto funcionamiento de Xv6:
 
