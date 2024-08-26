@@ -9,9 +9,9 @@ Pasos para instalar Xv6:
 	- Se siguieron los pasos de este blog https://bernardnongpoh.github.io/posts/riscv para la instalación de riscv toolchain en la VM.
 
 2. Sign up y uso de  Github:
-	- Se creo una cuenta en github para el uso de los repositorios.
+	- Se creó una cuenta en github para el uso de los repositorios.
 	- Se usó el link de la primera presentación para ir al github de Xv6 proporcionado por el profesor.
-	- Se creo un Fork desde el link de Xv6 al github personal creado anteriormente.
+	- Se creó un Fork desde el link de Xv6 al github personal creado anteriormente.
 
 3. Clonación de Fork:
 	- Se inició VSCode en Ubuntu.
