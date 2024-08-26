@@ -109,4 +109,27 @@ Confirmacion del correcto funcionamiento de Xv6:
 	Wolfgang Keller, Jungwoo Kim, Jonathan Kimmitt, Eddie Kohler, Vadim
 	Kolontsov, Austin Liew, l0stman, Pavan Maddamsetti, Imbar Marinescu,
 	Yandong Mao, Matan Shabtay, Hitoshi Mitake, Carmi Merimovich, Mark
-ech
+	Morrissey, mtasm, Joel Nider, Hayato Ohhashi, OptimisticSide,
+	phosphagos, Harry Porter, Greg Price, RayAndrew, Jude Rich, segfault,
+	Ayan Shafqat, Eldar Sehayek, Yongming Shen, Fumiya Shigemitsu, snoire,
+	Taojie, Cam Tenny, tyfkda, Warren Toomey, Stephen Tu, Alissa Tung,
+	Rafael Ubal, Amane Uehara, Pablo Ventura, Xi Wang, WaheedHafez,
+	Keiichi Watanabe, Lucas Wolf, Nicolas Wolovick, wxdao, Grant Wu, x653,
+	Jindong Zhang, Icenowy Zheng, ZhUyU1997, and Zou Chang Wei.
+
+	The code in the files that constitute xv6 is
+	Copyright 2006-2024 Frans Kaashoek, Robert Morris, and Russ Cox.
+
+	ERROR REPORTS
+
+	Please send errors and suggestions to Frans Kaashoek and Robert Morris
+	(kaashoek,rtm@mit.edu).  The main purpose of xv6 is as a teaching
+	operating system for MIT's 6.1810, so we are more interested in
+	simplifications and clarifications than new features.
+
+	BUILDING AND RUNNING XV6
+
+	You will need a RISC-V "newlib" tool chain from
+	https://github.com/riscv/riscv-gnu-toolchain, and qemu compiled for
+	riscv64-softmmu.  Once they are installed, and in your shell
+	search path, you can run "make qemu".
