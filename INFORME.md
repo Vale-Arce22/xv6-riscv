@@ -10,15 +10,14 @@ Informe de Implementación de Llamadas al Sistema
 	
 		- La llamada al sistema getancestor(int n) se diseñó para obtener el ancestro del proceso actual en la jerarquía de procesos. Dependiendo del valor de n, se devuelve:
 		
-		getancestor(0): El PID del proceso actual.
-		getancestor(1): El PID del proceso padre.
-		getancestor(2): El PID del abuelo del proceso.
+			- getancestor(0): El PID del proceso actual.
+			- getancestor(1): El PID del proceso padre.
+			- getancestor(2): El PID del abuelo del proceso.
 		
-		Si el valor de n es mayor que el número de ancestros disponibles, se retorna -1. La implementación de getancestor en sysproc.c implica:
-
-		- Recuperar el valor de n usando la función argint(), que obtiene el argumento de la llamada al sistema.
-		- Recorrer la jerarquía de procesos utilizando el puntero parent hasta el ancestro deseado o hasta que no haya más ancestros.
-		- Retornar el PID del ancestro encontrado o -1 si no hay suficientes ancestros.
+		- Si el valor de n es mayor que el número de ancestros disponibles, se retorna -1. - La implementación de getancestor en sysproc.c implica:
+			- Recuperar el valor de n usando la función argint(), que obtiene el argumento de la llamada al sistema.
+			- Recorrer la jerarquía de procesos utilizando el puntero parent hasta el ancestro deseado o hasta que no haya más ancestros.
+			- Retornar el PID del ancestro encontrado o -1 si no hay suficientes ancestros.
 
 2. Explicación de las modificaciones realizadas:
 
