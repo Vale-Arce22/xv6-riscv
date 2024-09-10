@@ -1,135 +1,75 @@
-Pasos para instalar Xv6:
+Informe de Implementación de Llamadas al Sistema
 
-1. Descargas e Instalaciones:
-	- Se descargó e instaló una VM para utilizar Linux Ubuntu en Windows 11.
-	- En la terminal de Linux se ejecutó el comando "sudo apt install ./code_1.92.0-1722473020_amd64.deb" para instalar VSCode en la VM.
-	* sudo permite manejar la terminal como admin master, permitiendo tareas como agregar y eliminar usuarios, etc. PD: Pide la clave de usuario del sistema para ejecutarse.
-	- En la terminal de Linux se ejecutó el comando "sudo -i" y "apt-get install git" para instalar git en la VM.
-	- En la terminal de Linux se ejecutó el comando "apt-get install qemu-system" para instalar qemu en la VM.
-	- Se siguieron los pasos de este blog https://bernardnongpoh.github.io/posts/riscv para la instalación de riscv toolchain en la VM.
+1. Funcionamiento de las llamadas al sistema:
+	> getppid():
+		- La llamada al sistema getppid() se utiliza para obtener el identificador del proceso padre del proceso actual. Si el proceso actual no tiene un proceso padre, se retorna -1, indicando que se trata del proceso raíz en la jerarquía. La implementación se realizó de la siguiente manera:
+		- Se añadió una función en sysproc.c para obtener el PID del proceso padre a partir de la estructura de datos del proceso actual.
+		- La función sys_getppid accede al campo parent del proceso actual y retorna el PID del proceso padre, o -1 si no existe un padre.
 
-2. Sign up y uso de  Github:
-	- Se creó una cuenta en github para el uso de los repositorios.
-	- Se usó el link de la primera presentación para ir al github de Xv6 proporcionado por el profesor.
-	- Se creó un Fork desde el link de Xv6 al github personal creado anteriormente.
-
-3. Clonación de Fork:
-	- Se inició VSCode en Ubuntu.
-	- En la terminal de VSCode se ejecutó "git clone --depth 1 https://github.com/Vale-Arce22/xv6-riscv" para hacer una clonación superficial del Fork creado en el paso 2.
-	- Se ejecutó "cd xv6-riscv" para ir a la carpeta "xv6-riscv" creada a partir de la clonación.
-	- Se ejecutó "git fetch --unshallow" para realizar el resto de la clonación de manera profunda y poder clonar todos los archivos del repositorio.
+	> getancestor(int n):
 	
-4. Compilación y Ejecución
-	- En la terminal se ejecutó "git checkout -b Tarea0" para crear un primer branch con el nombre Tarea0.
-	- En la terminal se ejecutó "make qemu" para compilar y ejecutar Xv6 dentro de la VM QEMU.
-	- Una vez Xv6 ejecutándose en QEMU se verificó que funcionara correctamente con los comandos: 
-		ls
-		echo "Hola xv6"
-		cat README
+		- La llamada al sistema getancestor(int n) se diseñó para obtener el ancestro del proceso actual en la jerarquía de procesos. Dependiendo del valor de n, se devuelve:
+		
+		getancestor(0): El PID del proceso actual.
+		getancestor(1): El PID del proceso padre.
+		getancestor(2): El PID del abuelo del proceso.
+		
+		Si el valor de n es mayor que el número de ancestros disponibles, se retorna -1. La implementación de getancestor en sysproc.c implica:
 
-Problemas encontrados y soluciones:
- 1. El acceso a la VM de manera gratuita solo fue posible a través de la descarga pirata.
+		- Recuperar el valor de n usando la función argint(), que obtiene el argumento de la llamada al sistema.
+		- Recorrer la jerarquía de procesos utilizando el puntero parent hasta el ancestro deseado o hasta que no haya más ancestros.
+		- Retornar el PID del ancestro encontrado o -1 si no hay suficientes ancestros.
 
- 2. Al hacer el paso a paso del blog https://bernardnongpoh.github.io/posts/riscv para la instalación de riscv toolchain en la VM, se tenía que utilizar el comando sudo para hacer uso del admin master, sin embargo, se desconocía el funcionamiento de este comando. Esto se solucionó investigando y aprendiendo de este comando en internet, para luego ejecutarlo.
+2. Explicación de las modificaciones realizadas:
 
- 3. Al clonar el repositorio, la cantidad de archivos no permitía que se pudiera llegar a término y tiraba error. Esto se solucionó haciendo en primera instancia una clonación superficial, para luego hacer una clonación más profunda con los comandos mencionados en el paso 3.
+	> Modificaciones en sysproc.c
 
- 4. Al hacer el make qemu tiró un error debido a que el compilador RISC-V y sus herramientas no estaban instaladas correctamente, en específico gcc. Esto se solucionó ejecutando los comandos "sudo apt-get update" y "sudo apt-get install gcc-riscv64-unknown-elf", comandos para actualizar la lista de paquetes disponibles y sus versiones, y para instalar el compilador gcc, respectivamente.
+		- sys_getppid: Se añadió la función que retorna el PID del proceso padre.
+		- sys_getancestor: Se implementó la función para recuperar el PID del ancestro en función del valor de n.
 
- 5. No fue posible cerrar Xv6 con Ctrl + A, X; ni interrumpir el proceso con Ctrl + C. Esto se solucionó:
-	1) Cerrando la terminal.
-	2) Abriendo una nueva terminal.
-	3) Ejecutando el comando "pgrep qemu" para obtener el PID.
-	4) Ejecutando el comando "kill -9 PID" para forzar el término del proceso.
+	> Modificaciones en syscall.c
 
-Confirmación del correcto funcionamiento de Xv6:
+		- Se actualizó la tabla de llamadas al sistema para incluir sys_getppid y sys_getancestor.
 
- 1. Comando: ls
+	> Modificaciones en Makefile
 
-	Resultado: 
+		- Se incluyó el programa de prueba yosoytupadre en el Makefile para asegurarse de que se compile e integre correctamente en el sistema.
 
-	```bash
-	.              1 1 1024
-	..             1 1 1024
-	README         2 2 2403
-	cat            2 3 35520
-	echo           2 4 34368
-	forktest       2 5 16232
-	grep           2 6 38960
-	Tarea00        2 7 33600
-	Tarea01        2 8 33808
-	init           2 9 34824
-	kill           2 10 34288
-	ln             2 11 34104
-	ls             2 12 37632
-	mkdir          2 13 34352
-	rm             2 14 34336
-	sh             2 15 57080
-	stressfs       2 16 35224
-	usertests      2 17 181128
-	grind          2 18 50792
-	wc             2 19 36504
-	zombie         2 20 33688
-	console        3 21 0
+	> Agregado de Programa de Usuario
 
- 2. Comando: echo "Hola xv6"
+		- Tarea1.c: Se creó un programa de usuario en la carpeta user que utiliza las llamadas al sistema getpid y getppid. Este programa se añadió al Makefile y se integró en el sistema para realizar pruebas.
 
-	Resultado: 
-	
-	```bash
-	"Hola xv6"
+	> Implementación de FIFO en xv6 (Esto fue una actividad en clase pero que ayudo para la Tarea 1)
 
- 3. Comando: cat README
+		- Objetivo: Modificar el scheduler de xv6 para usar el algoritmo FIFO (First In, First Out) en lugar del orden actual.
 
-	Resultado:
+		- Modificaciones:
 
-	```bash
-	xv6 is a re-implementation of Dennis Ritchie's and Ken Thompson's Unix
-	Version 6 (v6).  xv6 loosely follows the structure and style of v6,
-	but is implemented for a modern RISC-V multiprocessor using ANSI C.
+			- Paso 1: Se agregó una propiedad llamada arrival_time para almacenar el tiempo de llegada en la estructura proc en proc.h.
+			- Paso 2: Se inicializó el tiempo de llegada en la estructura cuando un proceso llega al sistema, utilizando la variable global ticks.
+			- Paso 3: Se modificó el scheduler para obtener el proceso más viejo comparando el tiempo de llegada de todos los procesos.
+			- Paso 4: Se asignó la CPU al proceso más viejo basado en el tiempo de llegada.
+			
+		- Programa de Prueba: Se creó test_fifo_xv6.c para verificar el funcionamiento del nuevo algoritmo FIFO en el sistema.
 
-	ACKNOWLEDGMENTS
+3. Dificultades encontradas y cómo Se solucionaron
 
-	xv6 is inspired by John Lions's Commentary on UNIX 6th Edition (Peer
-	to Peer Communications; ISBN: 1-57398-013-7; 1st edition (June 14,
-	2000)).  See also https://pdos.csail.mit.edu/6.1810/, which provides
-	pointers to on-line resources for v6.
+	> Error de Compilación por argint()
+		- Problema: Se produjo un error debido a una incompatibilidad en la declaración y el tipo de retorno de la función argint().
+		- Solución: Se ajustó la declaración de argint() en defs.h para que coincidiera con la implementación en syscall.c, asegurando que se manejaran correctamente los argumentos pasados a las llamadas al sistema.
 
-	The following people have made contributions: Russ Cox (context switching,
-	locking), Cliff Frey (MP), Xiao Yu (MP), Nickolai Zeldovich, and Austin
-	Clements.
+	> Referencia Indefinida a sys_getppid
+		- Problema: Durante la compilación, se reportó una referencia indefinida a sys_getppid.
+		- Solución: Se implementó la función sys_getppid y se actualizó la tabla de llamadas al sistema en syscall.c para incluirla correctamente.
 
-	We are also grateful for the bug reports and patches contributed by
-	Takahiro Aoyagi, Marcelo Arroyo, Silas Boyd-Wickizer, Anton Burtsev,
-	carlclone, Ian Chen, Dan Cross, Cody Cutler, Mike CAT, Tej Chajed,
-	Asami Doi,Wenyang Duan, eyalz800, Nelson Elhage, Saar Ettinger, Alice
-	Ferrazzi, Nathaniel Filardo, flespark, Peter Froehlich, Yakir Goaron,
-	Shivam Handa, Matt Harvey, Bryan Henry, jaichenhengjie, Jim Huang,
-	Matúš Jókay, John Jolly, Alexander Kapshuk, Anders Kaseorg, kehao95,
-	Wolfgang Keller, Jungwoo Kim, Jonathan Kimmitt, Eddie Kohler, Vadim
-	Kolontsov, Austin Liew, l0stman, Pavan Maddamsetti, Imbar Marinescu,
-	Yandong Mao, Matan Shabtay, Hitoshi Mitake, Carmi Merimovich, Mark
-	Morrissey, mtasm, Joel Nider, Hayato Ohhashi, OptimisticSide,
-	phosphagos, Harry Porter, Greg Price, RayAndrew, Jude Rich, segfault,
-	Ayan Shafqat, Eldar Sehayek, Yongming Shen, Fumiya Shigemitsu, snoire,
-	Taojie, Cam Tenny, tyfkda, Warren Toomey, Stephen Tu, Alissa Tung,
-	Rafael Ubal, Amane Uehara, Pablo Ventura, Xi Wang, WaheedHafez,
-	Keiichi Watanabe, Lucas Wolf, Nicolas Wolovick, wxdao, Grant Wu, x653,
-	Jindong Zhang, Icenowy Zheng, ZhUyU1997, and Zou Chang Wei.
+	> Comportamiento Inesperado de getancestor
+		- Problema: La función getancestor devolvía el PID del proceso actual en lugar del ancestro correcto en algunos casos.
+		- Solución: Se revisó la lógica de la función para asegurarse de que recorriera correctamente la jerarquía de procesos y manejara adecuadamente los casos en los que no hay suficientes ancestros.
 
-	The code in the files that constitute xv6 is
-	Copyright 2006-2024 Frans Kaashoek, Robert Morris, and Russ Cox.
+	> Problemas con la Gestión de Ramas en Git
+		- Problema: Olvidé crear una nueva rama para los cambios y, al hacer el commit en la rama incorrecta, se borró el avance realizado. Esto requirió rehacer el trabajo desde cero.
+		- Solución: Se creó una nueva rama adecuada y se volvió a implementar los cambios necesarios.
 
-	ERROR REPORTS
-
-	Please send errors and suggestions to Frans Kaashoek and Robert Morris
-	(kaashoek,rtm@mit.edu).  The main purpose of xv6 is as a teaching
-	operating system for MIT's 6.1810, so we are more interested in
-	simplifications and clarifications than new features.
-
-	BUILDING AND RUNNING XV6
-
-	You will need a RISC-V "newlib" tool chain from
-	https://github.com/riscv/riscv-gnu-toolchain, and qemu compiled for
-	riscv64-softmmu.  Once they are installed, and in your shell
-	search path, you can run "make qemu".
+	> Dificultades con el Manejo de xv6
+		- Problema: Tuve dificultades para entender el manejo de xv6 y cómo se relacionaban las instrucciones del ppt con las del GitHub.
+		- Solución: Revisé la documentación y los ejemplos en el repositorio de GitHub, y consulté la documentación de xv6 para comprender mejor el funcionamiento del sistema y las instrucciones requeridas.

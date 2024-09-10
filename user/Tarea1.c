@@ -7,5 +7,8 @@ int main() {
   int pid = getpid();
   printf("El ID del proceso es: %d\n", pid);
 
+  int ppid = getppid();
+  printf("El ID del proceso padre es: %d\n", ppid);
+
   exit(0);
 }

@@ -129,8 +129,6 @@ UPROGS=\
 	$U/_echo\
 	$U/_forktest\
 	$U/_grep\
-	$U/_Tarea00\
-	$U/_Tarea01\
 	$U/_init\
 	$U/_kill\
 	$U/_ln\
@@ -143,6 +141,9 @@ UPROGS=\
 	$U/_grind\
 	$U/_wc\
 	$U/_zombie\
+	$U/_Tarea1\
+	$U/_yosoytupadre\
+	$U/_test_fifo_xv6\
 
 fs.img: mkfs/mkfs README $(UPROGS)
 	mkfs/mkfs fs.img README $(UPROGS)
