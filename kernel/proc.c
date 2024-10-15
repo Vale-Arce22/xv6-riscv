@@ -130,6 +130,10 @@ found:
   p->arrival_time = ticks;
   release(&tickslock);
 
+  // Inicializar prioridad y boost
+  p->priority = 0;  // Inicializar prioridad en 0 (mayor prioridad)
+  p->boost = 1;     // Inicializar boost en 1
+
   // Allocate a trapframe page.
   if((p->trapframe = (struct trapframe *)kalloc()) == 0){
     freeproc(p);
@@ -472,6 +476,7 @@ void
 scheduler(void)
 {
   struct proc *p;
+  struct proc *highest_priority_proc;
   struct cpu *c = mycpu();
 
   c->proc = 0;
@@ -481,33 +486,58 @@ scheduler(void)
     // processes are waiting.
     intr_on();
 
-    // Obtiene el proceso más viejo usando la función get_oldest_process()
-    p = get_oldest_process();
+    highest_priority_proc = 0;  // Reseteamos la selección del proceso
 
-    if(p == 0) {
-      // nothing to run; stop running on this core until an interrupt.
-      intr_on();
-      asm volatile("wfi");
-      continue;
+    // Recorre todos los procesos y ajusta sus prioridades
+    for (p = proc; p < &proc[NPROC]; p++) {
+      acquire(&p->lock);  // Bloquea cada proceso individualmente
+
+      // Verifica si el proceso está en estado RUNNABLE  
+      if (p->state != RUNNABLE) {
+        release(&p->lock); // Libera el bloqueo si el proceso no es runnable
+        continue; // Si no es runnable, continúa al siguiente proceso
+      }
+      
+      // Ajuste de prioridades con el boost
+      p->priority += p->boost;
+      if(p->priority >= 9){
+        p->priority = 9;
+        p->boost = -1;
+      } else if(p->priority <= 0){
+        p->priority = 0;
+        p->boost = 1;
+      }
+
+      // Selección del proceso con la prioridad más alta (menor número)
+      if(highest_priority_proc == 0 || p->priority < highest_priority_proc->priority){
+        highest_priority_proc = p;
+      }
+
+      release(&p->lock);  // Libera el bloqueo después de ajustar las prioridades
     }
 
-    // Si se encontró un proceso más viejo, lo asignamos
-    // p = oldest;
+    // Si encontramos un proceso para ejecutar
+    if(highest_priority_proc != 0){
+      p = highest_priority_proc;
+      acquire(&p->lock);  // Bloquea el proceso antes de ejecutar
 
-    acquire(&p->lock);
-    if(p->state == RUNNABLE) {
-      // Switch to chosen process.  It is the process's job
-      // to release its lock and then reacquire it
-      // before jumping back to us.
-      p->state = RUNNING;
-      c->proc = p;
-      swtch(&c->context, &p->context);  
+      // Validación adicional para asegurarnos que el proceso es seguro
+      if (p->state == RUNNABLE) {
+        c->proc = p;
+        p->state = RUNNING;
 
-      // Process is done running for now.
-      // It should have changed its p->state before coming back.
-      c->proc = 0;
+        // Cambio de contexto
+        swtch(&c->context, &p->context);
+
+        // Después de que el proceso termine de ejecutarse, reseteamos la CPU
+        c->proc = 0;
       }
-      release(&p->lock);
+      release(&p->lock);  // Libera el bloqueo después de ejecutar el proceso
+    } else {
+      // Si no hay procesos ejecutables, detiene la CPU
+      intr_on();
+      asm volatile("wfi");
+    }
     }
     
   }

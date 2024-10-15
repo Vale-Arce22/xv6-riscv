@@ -1,74 +1,56 @@
-Informe de Implementación de Llamadas al Sistema
+Informe de implementación de Scheduler con Sistema de Prioridades y Boosts
 
-1. Funcionamiento de las llamadas al sistema:
-	- getppid():
-		- La llamada al sistema getppid() se utiliza para obtener el identificador del proceso padre del proceso actual. Si el proceso actual no tiene un proceso padre, se retorna -1, indicando que se trata del proceso raíz en la jerarquía. La implementación se realizó de la siguiente manera:
-		- Se añadió una función en sysproc.c para obtener el PID del proceso padre a partir de la estructura de datos del proceso actual.
-		- La función sys_getppid accede al campo parent del proceso actual y retorna el PID del proceso padre, o -1 si no existe un padre.
+1. Funcionamiento del sistema de prioridades:
+	- Estructura del proceso (proc.h)
+		Se agregaron dos nuevos campos a la estructura de un proceso para habilitar sistema de prioridades, estos son:
+			- priority: Campo que define la prioridad del proceso, donde un valor más bajo indica mayor prioridad.
+			- boost: Campo utilizado para modificar la prioridad de un proceso, ya sea aumentándola o reduciéndola.
 
-	- getancestor(int n):
-	
-		- La llamada al sistema getancestor(int n) se diseñó para obtener el ancestro del proceso actual en la jerarquía de procesos. Dependiendo del valor de n, se devuelve:
-		
-			- getancestor(0): El PID del proceso actual.
-			- getancestor(1): El PID del proceso padre.
-			- getancestor(2): El PID del abuelo del proceso.
-		
-		- Si el valor de n es mayor que el número de ancestros disponibles, se retorna -1. - La implementación de getancestor en sysproc.c implica:
-			- Recuperar el valor de n usando la función argint(), que obtiene el argumento de la llamada al sistema.
-			- Recorrer la jerarquía de procesos utilizando el puntero parent hasta el ancestro deseado o hasta que no haya más ancestros.
-			- Retornar el PID del ancestro encontrado o -1 si no hay suficientes ancestros.
+	- Función allocproc (proc.h)
+		Se modificó la función allocproc para inicializar los valores de prioridad y boost en 0 (mayor prioridad) y 1, respectivamente.
+
+	- Scheduler (proc.c)
+		Se modificó la función scheduler para implementar la lógica del manejo de prioridades, la cual incluye:
+		- Ajustar las prioridades de los procesos en cada iteración del scheduler.
+		- Incrementar la prioridad de cada proceso utilizando el campo boost.
+		- Limitar la prioridad en un rango de 0 a 9, reduciendo el boost cuando la prioridad llega a 9 y aumentando cuando se establece en 0.
+
+	- Programa de Prueba (Prueba_t2.c):
+		Se ha modificado el archivo Prueba_t2.c para crear 20 procesos y demostrar la funcionalidad del nuevo sistema de prioridades:
+		- Se define un número constante NUM_PROCESOS para crear 20 procesos.
+		- Cada proceso hijo ejecuta una función que imprime su identificador y espera un tiempo breve antes de finalizar.
 
 2. Explicación de las modificaciones realizadas:
 
-	- Modificaciones en sysproc.c
+	- Modificaciones en proc.h:
+		Se añadieron los campos priority, y boost en la estructura proc.
 
-		- sys_getppid: Se añadió la función que retorna el PID del proceso padre.
-		- sys_getancestor: Se implementó la función para recuperar el PID del ancestro en función del valor de n.
+	- Modificaciones en allocproc (proc.c):
+		- Se inicializaron los nuevos campos en la función allocproc:
+		- p->priority = 0; para establecer la prioridad inicial.
+		- p->boost = 1; para inicializar el boost.
 
-	- Modificaciones en syscall.c
+	- Modificaciones en scheduler (proc.c):
+		- Se implementó la lógica del scheduler para ajustar las prioridades de los procesos, incluyendo:
+		- Un bucle que itera sobre todos los procesos, ajustando las prioridades y limitando los valores entre 0 y 9.
 
-		- Se actualizó la tabla de llamadas al sistema para incluir sys_getppid y sys_getancestor.
+	- Programa de Prueba:
+		- Se creó Prueba_t2.c, que incluye la definición de un número constante para crear 20 procesos y la implementación de la lógica necesaria para que cada proceso imprima su identificador y duerma un tiempo.
+	
+	- Nueva syscall:
+		- Se implementó una nueva llamada de sistema, que nos permita visualizar la prioridad de los procesos. Esto se logró siguiendo el mismo procedimiento que se realizó para las llamadas de sistema de las tareas anteriores, modificando los archivos:
+			- sysproc.c
+			- syscall.h
+			- syscall.c
+			- usys.pl
+			- user.h
+	
+3. Dificultades encontradas y cómo se solucionaron:
 
-	- Modificaciones en Makefile
+	- Errores de Compilación:
+		- Problema: Se presentaron errores al compilar debido a la falta de inicialización de los nuevos campos en algunas partes del código.
+		- Solución: Se revisó y actualizó el código en el archivo proc.c en el codigo perteneciente a allocproc y al scheduler para asegurar que todos los nuevos campos fueran correctamente inicializados.
 
-		- Se incluyó el programa de prueba yosoytupadre en el Makefile para asegurarse de que se compile e integre correctamente en el sistema.
-
-	- Agregado de Programa de Usuario
-
-		- Tarea1.c: Se creó un programa de usuario en la carpeta user que utiliza las llamadas al sistema getpid y getppid. Este programa se añadió al Makefile y se integró en el sistema para realizar pruebas.
-
-	- Implementación de FIFO en xv6 (Esto fue una actividad en clase pero que ayudo para la Tarea 1)
-
-		- Objetivo: Modificar el scheduler de xv6 para usar el algoritmo FIFO (First In, First Out) en lugar del orden actual.
-
-		- Modificaciones:
-
-			- Paso 1: Se agregó una propiedad llamada arrival_time para almacenar el tiempo de llegada en la estructura proc en proc.h.
-			- Paso 2: Se inicializó el tiempo de llegada en la estructura cuando un proceso llega al sistema, utilizando la variable global ticks.
-			- Paso 3: Se modificó el scheduler para obtener el proceso más viejo comparando el tiempo de llegada de todos los procesos.
-			- Paso 4: Se asignó la CPU al proceso más viejo basado en el tiempo de llegada.
-			
-		- Programa de Prueba: Se creó test_fifo_xv6.c para verificar el funcionamiento del nuevo algoritmo FIFO en el sistema.
-
-3. Dificultades encontradas y cómo Se solucionaron
-
-	- Error de Compilación por argint()
-		- Problema: Se produjo un error debido a una incompatibilidad en la declaración y el tipo de retorno de la función argint().
-		- Solución: Se ajustó la declaración de argint() en defs.h para que coincidiera con la implementación en syscall.c, asegurando que se manejaran correctamente los argumentos pasados a las llamadas al sistema.
-
-	- Referencia Indefinida a sys_getppid
-		- Problema: Durante la compilación, se reportó una referencia indefinida a sys_getppid.
-		- Solución: Se implementó la función sys_getppid y se actualizó la tabla de llamadas al sistema en syscall.c para incluirla correctamente.
-
-	- Comportamiento Inesperado de getancestor
-		- Problema: La función getancestor devolvía el PID del proceso actual en lugar del ancestro correcto en algunos casos.
-		- Solución: Se revisó la lógica de la función para asegurarse de que recorriera correctamente la jerarquía de procesos y manejara adecuadamente los casos en los que no hay suficientes ancestros.
-
-	- Problemas con la Gestión de Ramas en Git
-		- Problema: Olvidé crear una nueva rama para los cambios y, al hacer el commit en la rama incorrecta, se borró el avance realizado. Esto requirió rehacer el trabajo desde cero.
-		- Solución: Se creó una nueva rama adecuada y se volvió a implementar los cambios necesarios.
-
-	- Dificultades con el Manejo de xv6
-		- Problema: Tuve dificultades para entender el manejo de xv6 y cómo se relacionaban las instrucciones del ppt con las del GitHub.
-		- Solución: Revisé la documentación y los ejemplos en el repositorio de GitHub, y consulté la documentación de xv6 para comprender mejor el funcionamiento del sistema y las instrucciones requeridas.
+	- Gestión de Prioridades:
+		- Problema: Hubo confusiones sobre el manejo de los valores de prioridad y boost en el scheduler.
+		- Solución: Se añadió lógica de control para ajustar y limitar las prioridades adecuadamente en el scheduler.

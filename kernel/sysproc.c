@@ -6,6 +6,8 @@
 #include "spinlock.h"
 #include "proc.h"
 
+extern struct proc proc[];
+
 uint64
 sys_exit(void)
 {
@@ -123,4 +125,29 @@ sys_uptime(void)
   xticks = ticks;
   release(&tickslock);
   return xticks;
+}
+
+// Nueva syscall para obtener la prioridad de un proceso
+uint64
+sys_getpriority(void)
+{
+  int pid;
+  struct proc *p;
+
+  // Obtener el PID del argumento
+  if (argint(0, &pid) < 0)
+    return -1;
+
+  // Iterar sobre todos los procesos en la tabla de procesos
+  for (p = proc; p < &proc[NPROC]; p++) {
+    acquire(&p->lock);
+    if (p->pid == pid) {  // Si encontramos el proceso con el PID correspondiente
+      int priority = p->priority;
+      release(&p->lock);
+      return priority;  // Retornamos la prioridad del proceso
+    }
+    release(&p->lock);
+  }
+  
+  return -1; // Si no se encuentra el proceso, retornar -1
 }

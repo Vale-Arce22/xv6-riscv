@@ -144,6 +144,7 @@ UPROGS=\
 	$U/_Tarea1\
 	$U/_yosoytupadre\
 	$U/_test_fifo_xv6\
+	$U/_Prueba_t2\
 
 fs.img: mkfs/mkfs README $(UPROGS)
 	mkfs/mkfs fs.img README $(UPROGS)

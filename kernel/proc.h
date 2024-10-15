@@ -84,6 +84,7 @@ enum procstate { UNUSED, USED, SLEEPING, RUNNABLE, RUNNING, ZOMBIE };
 // Per-process state
 struct proc {
   struct spinlock lock;
+  
 
   // p->lock must be held when using these:
   enum procstate state;        // Process state
@@ -106,4 +107,7 @@ struct proc {
   char name[16];               // Process name (debugging)
 
   int arrival_time;
+
+  int priority;  // Campo para la prioridad
+  int boost;     // Campo para el boost
 };

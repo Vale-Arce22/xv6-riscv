@@ -1,3 +1,5 @@
+typedef unsigned int uint;
+
 struct stat;
 
 // system calls
@@ -24,6 +26,8 @@ int sleep(int);
 int uptime(void);
 int getppid(void);
 int getancestor(int pid);
+int getpriority(int pid);
+
 
 // ulib.c
 int stat(const char*, struct stat*);
