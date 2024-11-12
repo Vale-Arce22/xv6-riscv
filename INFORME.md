@@ -8,8 +8,7 @@ Informe de implementación de mprotect y munprotect en xv6
 
 2. Funcionamiento de mprotect y munprotect:
 
-    - Modificación en la tabla de páginas (proc.c):
-
+    - Modificación en la tabla de páginas (proc.c): 
     Se implementaron las funciones mprotect y munprotect en proc.c. La función mprotect permite proteger un rango de memoria para evitar que los procesos puedan escribir en él, mientras que munprotect revierte esta protección. Ambas funciones actualizan las páginas de memoria de los procesos, cambiando el estado de las páginas correspondientes entre protegidas y no protegidas.
 
     - sys_mprotect y sys_munprotect (sysproc.c):
@@ -33,7 +32,7 @@ Informe de implementación de mprotect y munprotect en xv6
 
     - Problemas al ejecutar el programa de prueba (code_test_t3.c):
         - Problema: El programa code_test_t3.c, desarrollado para probar las funciones mprotect y munprotect, no pudo ejecutarse correctamente debido a errores en la implementación de las funciones de protección de memoria. En particular, las funciones no gestionaban adecuadamente las direcciones de memoria, lo que causaba fallos al intentar proteger o desproteger las páginas.
-        - Solución: Se realizó una revisión detallada del código en las funciones de protección, asegurándose de que las direcciones de memoria estuvieran correctamente alineadas y fueran válidas antes de aplicar las funciones. También se implementaron verificaciones adicionales para garantizar que la memoria asignada estuviera en un estado correcto antes de intentar aplicar las protecciones.
+        - Solución: No se logró una solución.
 
     - Errores de compilación y enlazado:
         - Problema: Durante la implementación, se encontraron errores de compilación debido a la falta de inicialización de algunos campos en las estructuras y la ausencia de validaciones en las funciones del sistema.
