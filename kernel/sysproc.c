@@ -5,6 +5,10 @@
 #include "memlayout.h"
 #include "spinlock.h"
 #include "proc.h"
+#include "syscall.h"
+
+extern int mprotect(void *addr, int len);
+extern int munprotect(void *addr, int len);
 
 uint64
 sys_exit(void)
@@ -90,4 +94,30 @@ sys_uptime(void)
   xticks = ticks;
   release(&tickslock);
   return xticks;
+}
+
+uint64 sys_mprotect(void) {
+    uint64 addr = myproc()->trapframe->a0;  // Primer argumento (dirección)
+    int len = myproc()->trapframe->a1;      // Segundo argumento (longitud)
+
+    // Validar que addr y len tengan valores aceptables
+    if (addr == 0 || len <= 0) {
+        return -1;  // Error en los parámetros
+    }
+
+    // Llamar a mprotect con addr convertido a puntero y len
+    return mprotect((void *)addr, len);
+}
+
+uint64 sys_munprotect(void) {
+    uint64 addr = myproc()->trapframe->a0;  // Primer argumento (dirección)
+    int len = myproc()->trapframe->a1;      // Segundo argumento (longitud)
+
+    // Validar que addr y len tengan valores aceptables
+    if (addr == 0 || len <= 0) {
+        return -1;  // Error en los parámetros
+    }
+
+    // Llamar a munprotect con addr convertido a puntero y len
+    return munprotect((void *)addr, len);
 }

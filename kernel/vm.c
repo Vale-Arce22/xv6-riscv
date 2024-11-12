@@ -5,6 +5,8 @@
 #include "riscv.h"
 #include "defs.h"
 #include "fs.h"
+#include "proc.h"
+#include "spinlock.h"
 
 /*
  * the kernel's page table.
@@ -448,4 +450,36 @@ copyinstr(pagetable_t pagetable, char *dst, uint64 srcva, uint64 max)
   } else {
     return -1;
   }
+}
+
+int mprotect(uint64 addr, int len) {
+    struct proc *p = myproc();
+
+    if (addr % PGSIZE != 0 || len <= 0 || addr + len * PGSIZE > p->sz)
+        return -1;
+
+    for (uint64 i = 0; i < len; i++) {
+        pte_t *pte = walk(p->pagetable, addr + i * PGSIZE, 0);
+        if (pte == 0)
+            return -1;
+
+        *pte &= ~PTE_W;
+    }
+    return 0;
+}
+
+int munprotect(uint64 addr, int len) {
+    struct proc *p = myproc();
+
+    if (addr % PGSIZE != 0 || len <= 0 || addr + len * PGSIZE > p->sz)
+        return -1;
+
+    for (uint64 i = 0; i < len; i++) {
+        pte_t *pte = walk(p->pagetable, addr + i * PGSIZE, 0);
+        if (pte == 0)
+            return -1;
+
+        *pte |= PTE_W;
+    }
+    return 0;
 }

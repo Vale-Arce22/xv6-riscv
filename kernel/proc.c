@@ -693,3 +693,39 @@ procdump(void)
     printf("\n");
   }
 }
+
+int
+mprotect(void *addr, int len) {
+    struct proc *p = myproc();
+    if (addr == 0 || len <= 0 || (uint64)addr % PGSIZE != 0) {
+        return -1;  // Manejo de errores
+    }
+
+    // Calcular cuántas páginas y aplicar protección
+    for (int i = 0; i < len; i++) {
+        pte_t *pte = walk(p->pagetable, (uint64)addr + i * PGSIZE, 0);
+        if (pte == 0 || (*pte & PTE_V) == 0) {
+            return -1;
+        }
+        *pte &= ~PTE_W;  // Deshabilitar escritura
+    }
+    return 0;
+}
+
+int
+munprotect(void *addr, int len) {
+    struct proc *p = myproc();
+    if (addr == 0 || len <= 0 || (uint64)addr % PGSIZE != 0) {
+        return -1;  // Manejo de errores
+    }
+
+    // Revertir la protección
+    for (int i = 0; i < len; i++) {
+        pte_t *pte = walk(p->pagetable, (uint64)addr + i * PGSIZE, 0);
+        if (pte == 0 || (*pte & PTE_V) == 0) {
+            return -1;
+        }
+        *pte |= PTE_W;  // Habilitar escritura
+    }
+    return 0;
+}
