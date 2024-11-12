@@ -2,9 +2,9 @@ Informe de implementación de mprotect y munprotect en xv6
 
 1. Actualización del Fork:
 
-Antes de realizar cualquier modificación en el código de xv6, se actualizó el fork local para reflejar los cambios más recientes del repositorio original de MIT. Esto implicó agregar el repositorio del MIT como remoto, obtener los cambios más recientes y fusionarlos con la rama principal del repositorio local. Posteriormente, los cambios fueron empujados al fork en GitHub para asegurar que estuviera sincronizado con el repositorio original.
+    Antes de realizar cualquier modificación en el código de xv6, se actualizó el fork local para reflejar los cambios más recientes del repositorio original de MIT. Esto implicó agregar el repositorio del MIT como remoto, obtener los cambios más recientes y fusionarlos con la rama principal del repositorio local. Posteriormente, los cambios fueron empujados al fork en GitHub para asegurar que estuviera sincronizado con el repositorio original.
 
-PD: Se cree que este paso fue el que provocó los problemas posteriores para no ser capaz de lograr la Tarea 3 al 100%.
+    PD: Se cree que este paso fue el que provocó los problemas posteriores para no ser capaz de lograr la Tarea 3 al 100%.
 
 2. Funcionamiento de mprotect y munprotect:
 
@@ -35,7 +35,7 @@ PD: Se cree que este paso fue el que provocó los problemas posteriores para no 
         - Problema: El programa code_test_t3.c, desarrollado para probar las funciones mprotect y munprotect, no pudo ejecutarse correctamente debido a errores en la implementación de las funciones de protección de memoria. En particular, las funciones no gestionaban adecuadamente las direcciones de memoria, lo que causaba fallos al intentar proteger o desproteger las páginas.
         - Solución: Se realizó una revisión detallada del código en las funciones de protección, asegurándose de que las direcciones de memoria estuvieran correctamente alineadas y fueran válidas antes de aplicar las funciones. También se implementaron verificaciones adicionales para garantizar que la memoria asignada estuviera en un estado correcto antes de intentar aplicar las protecciones.
 
-    - rrores de compilación y enlazado:
+    - Errores de compilación y enlazado:
         - Problema: Durante la implementación, se encontraron errores de compilación debido a la falta de inicialización de algunos campos en las estructuras y la ausencia de validaciones en las funciones del sistema.
         - Solución: Se corrigieron las inicializaciones de las estructuras de memoria en proc.c, asegurando que todos los campos estuvieran correctamente definidos antes de ser utilizados en las funciones de protección.
 
