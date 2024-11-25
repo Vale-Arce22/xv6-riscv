@@ -5,6 +5,7 @@
 #include "spinlock.h"
 #include "proc.h"
 #include "defs.h"
+#include "mmu.h"
 
 struct cpu cpus[NCPU];
 
@@ -694,38 +695,44 @@ procdump(void)
   }
 }
 
-int
-mprotect(void *addr, int len) {
-    struct proc *p = myproc();
-    if (addr == 0 || len <= 0 || (uint64)addr % PGSIZE != 0) {
-        return -1;  // Manejo de errores
-    }
+int sys_mprotect(void) {
+    void *addr;
+    int len;
 
-    // Calcular cuántas páginas y aplicar protección
+    if (argptr(0, (void*)&addr, sizeof(addr)) < 0 || argint(1, &len) < 0)
+        return -1;
+
+    if (addr == 0 || len <= 0 || (uint)addr % PGSIZE != 0) // Validación
+        return -1;
+
+    struct proc *p = myproc();
     for (int i = 0; i < len; i++) {
-        pte_t *pte = walk(p->pagetable, (uint64)addr + i * PGSIZE, 0);
-        if (pte == 0 || (*pte & PTE_V) == 0) {
+        pte_t *pte = walkpgdir(p->pgdir, addr + i * PGSIZE, 0);
+        if (!pte || !(*pte & PTE_P))
             return -1;
-        }
-        *pte &= ~PTE_W;  // Deshabilitar escritura
+        *pte &= ~PTE_W; // Deshabilitar escritura
     }
+    lcr3(V2P(p->pgdir)); // Actualizar TLB
     return 0;
 }
 
-int
-munprotect(void *addr, int len) {
-    struct proc *p = myproc();
-    if (addr == 0 || len <= 0 || (uint64)addr % PGSIZE != 0) {
-        return -1;  // Manejo de errores
-    }
+int sys_munprotect(void) {
+    void *addr;
+    int len;
 
-    // Revertir la protección
+    if (argptr(0, (void*)&addr, sizeof(addr)) < 0 || argint(1, &len) < 0)
+        return -1;
+
+    if (addr == 0 || len <= 0 || (uint)addr % PGSIZE != 0) // Validación
+        return -1;
+
+    struct proc *p = myproc();
     for (int i = 0; i < len; i++) {
-        pte_t *pte = walk(p->pagetable, (uint64)addr + i * PGSIZE, 0);
-        if (pte == 0 || (*pte & PTE_V) == 0) {
+        pte_t *pte = walkpgdir(p->pgdir, addr + i * PGSIZE, 0);
+        if (!pte || !(*pte & PTE_P))
             return -1;
-        }
-        *pte |= PTE_W;  // Habilitar escritura
+        *pte |= PTE_W; // Habilitar escritura
     }
+    lcr3(V2P(p->pgdir)); // Actualizar TLB
     return 0;
 }
