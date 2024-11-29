@@ -180,3 +180,30 @@ filewrite(struct file *f, uint64 addr, int n)
   return ret;
 }
 
+// Cambiar permisos del archivo especificado
+int chmod(char *path, int perm) {
+    struct inode *ip;
+
+    begin_op();
+    if ((ip = namei(path)) == 0) {
+        end_op();
+        return -1; // Archivo no encontrado
+    }
+
+    ilock(ip);
+
+    // Validar que no se trate de un directorio
+    if (ip->type == T_DIR) {
+        iunlockput(ip);
+        end_op();
+        return -1;
+    }
+
+    // Modificar los permisos
+    ip->perm = perm;
+    iupdate(ip); // Actualizar el inode en disco
+
+    iunlockput(ip);
+    end_op();
+    return 0; // Éxito
+}

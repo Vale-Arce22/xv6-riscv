@@ -695,3 +695,8 @@ nameiparent(char *path, char *name)
 {
   return namex(path, 1, name);
 }
+
+int check_perm(struct inode *ip, int perm) {
+    return (ip->perm & perm) ? 0 : -1;
+}
+

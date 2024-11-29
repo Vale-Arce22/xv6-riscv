@@ -72,12 +72,20 @@ sys_read(void)
   int n;
   uint64 p;
 
+  // Obtener los argumentos
   argaddr(1, &p);
   argint(2, &n);
+  
   if(argfd(0, 0, &f) < 0)
     return -1;
+
+  // Validar permisos
+  if(!f->readable)
+    return -1;
+
   return fileread(f, p, n);
 }
+
 
 uint64
 sys_write(void)
@@ -85,14 +93,21 @@ sys_write(void)
   struct file *f;
   int n;
   uint64 p;
-  
+
+  // Obtener los argumentos
   argaddr(1, &p);
   argint(2, &n);
+
   if(argfd(0, 0, &f) < 0)
+    return -1;
+    
+  // Validar permisos
+  if(!f->writable)
     return -1;
 
   return filewrite(f, p, n);
 }
+
 
 uint64
 sys_close(void)
@@ -271,6 +286,7 @@ create(char *path, short type, short major, short minor)
   ip->major = major;
   ip->minor = minor;
   ip->nlink = 1;
+  ip->perm = 3; // Permisos predeterminados: lectura/escritura
   iupdate(ip);
 
   if(type == T_DIR){  // Create . and .. entries.
@@ -333,6 +349,18 @@ sys_open(void)
       end_op();
       return -1;
     }
+  }
+
+  if ((omode & O_WRONLY || omode & O_RDWR) && check_perm(ip, 2) < 0) { // Verifica permisos para escritura
+    iunlockput(ip);
+    end_op();
+    return -1;
+  }
+  
+  if ((omode & O_RDONLY) && check_perm(ip, 1) < 0) { // Verifica permisos para lectura
+    iunlockput(ip);
+    end_op();
+    return -1;
   }
 
   if(ip->type == T_DEVICE && (ip->major < 0 || ip->major >= NDEV)){
@@ -503,3 +531,16 @@ sys_pipe(void)
   }
   return 0;
 }
+
+uint64
+sys_chmod(void)
+{
+    char path[MAXPATH];
+    int perm;
+
+    if (argstr(0, path, MAXPATH) < 0 || argint(1, &perm) < 0)
+        return -1;
+
+    return chmod(path, perm);
+}
+

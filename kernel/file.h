@@ -27,6 +27,7 @@ struct inode {
   short nlink;
   uint size;
   uint addrs[NDIRECT+1];
+  short perm;  // Permisos: 0 = ninguno, 1 = solo lectura, 2 = solo escritura, 3 = lectura/escritura
 };
 
 // map major device number to device functions.
@@ -38,3 +39,5 @@ struct devsw {
 extern struct devsw devsw[];
 
 #define CONSOLE 1
+
+int check_perm(struct inode *ip, int perm);

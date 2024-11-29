@@ -27,6 +27,7 @@ int uptime(void);
 int getppid(void);
 int getancestor(int pid);
 int getpriority(int pid);
+int chmod(char *path, int mode);
 
 
 // ulib.c

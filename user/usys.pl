@@ -39,3 +39,4 @@ entry("uptime");
 entry("getppid");
 entry("getancestor");
 entry("getpriority");
+entry("chmod")
